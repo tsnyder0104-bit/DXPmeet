@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--   <link rel="stylesheet" href="style.css"> -->
+</head>
+
+<body>
+    <script>
+        const WEB_APP_URL =
+            "https://script.google.com/macros/s/AKfycby9XdKJ2U9HVLezcP38hP_SgOF-ehY5QEli4OWAPFNwQ3-ryNeiVxlIYPMbGp-1qMJT/exec";
+
+        let data = [];
+
+        async function loadData() {
+            try {
+                const response = await fetch(WEB_APP_URL);
+                data = await response.json();
+            } catch (err) {
+                console.error(err);
+                alert("Unable to load event data.");
+            }
+        }
+
+        //main functions
+        function displayGuest(guest) {
+            const guestList = document.getElementById("guestList");
+
+            const li = document.createElement("li");
+
+            const nameSpan = document.createElement("span");
+            nameSpan.textContent = guest.name;
+
+            const removeButton = document.createElement("button");
+            removeButton.textContent = "X";
+            removeButton.style = "color:red; margin:0px 10px;";
+            removeButton.title = "Removes you from the list";
+
+            removeButton.addEventListener("click", () => {
+                removeGuest(guest);
+            });
+
+            li.appendChild(nameSpan);
+            li.appendChild(removeButton);
+
+            guestList.appendChild(li);
+        }
+
+        async function removeGuest(guest) {
+            const match = getSelectedObject();
+
+            const formData = {
+                name: guest.name,
+                email: guest.email,
+                key: match.key,
+                action: "removeSignup"
+            };
+
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    await loadData();
+                    refreshEvent();
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Unable to remove attendee.");
+            }
+        }
+
+        function populateDropdown() {
+            const select = document.getElementById("dateSelect");
+
+            const currentValue = select.value;
+
+            select.replaceChildren();
+
+            data.forEach((row) => {
+                const eventDate = new Date(row.date);
+
+                const readable = eventDate.toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric"
+                });
+
+                const option = document.createElement("option");
+
+                option.value = row.date;
+                option.textContent = readable;
+
+                select.appendChild(option);
+            });
+
+            if (currentValue) {
+                select.value = currentValue;
+            }
+        }
+
+        function displayInfo(date) {
+            document.getElementById("signupForm").style.display = "block";
+            document.getElementById("folks").style.display = "block";
+            const match = data.find((item) => item.date === date);
+
+            if (!match) return;
+
+            const dat = new Date(match.date);
+            const tim = new Date(match.time);
+            const deadDat = new Date(match.deadDate);
+            const deadTim = new Date(match.deadTime);
+
+            const guestHTML = document.getElementById("guestList");
+            guestHTML.replaceChildren();
+
+            match.attendees.forEach(displayGuest);
+
+            const details = document.getElementById("details");
+
+            details.innerHTML = `
+    <p id="displayTitle"></p>
+    <p class="displayEntry">
+      When:
+      ${timeFormatter(tim)},
+      ${dat.toDateString().slice(0, 10)}
+    </p>
+    <p id="displayLocation" class="displayEntry"></p>
+    <span id="tbr">
+    <p class="displayEntry"
+       title="The event will be cancelled if there are fewer people signed up by the deadline">
+       Minimum attendance: ${match.count}
+    </p>
+    <p id="displayNotes" class="displayEntry"></p>
+    <p class="displayEntry">
+      Sign up by
+      ${timeFormatter(deadTim)}
+      on
+      ${deadDat.toDateString().slice(0, 10)}
+    </p><span>
+  `;
+
+            document.getElementById("displayTitle").innerText = match.title;
+
+            document.getElementById("displayLocation").innerText = match.location
+                ? `Where: ${match.location}`
+                : "Where: nobody knows fam";
+
+            document.getElementById("displayNotes").innerText = `Notes: ${match.notes}`;
+
+            //POST DEADLINE FORMATTING
+            // document.getElementById("printer").textContent = match.status;
+            if (match.status === "cancelled") {
+                document.getElementById("tbr").style.display = "none";
+                document.getElementById("signupForm").style.display = "none";
+                document.getElementById("folks").style.display = "none";
+                document.getElementById("displayLocation").textContent =
+                    "This event has been scheduled for destruction.";
+            }
+        }
+
+        function refreshEvent() {
+            const select = document.getElementById("dateSelect");
+
+            if (!select.value && select.options.length > 0) {
+                select.selectedIndex = 0;
+            }
+
+            displayInfo(select.value);
+        }
+
+        async function submitSignup(e) {
+            e.preventDefault();
+            document.getElementById("submitButton").disabled = true;
+            const form = e.target;
+            const match = getSelectedObject();
+
+            const formData = {
+                name: form.name.value,
+                email: form.email.value,
+                key: match.key,
+                action: "eventSignup"
+            };
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    await loadData();
+                    form.reset();
+                    refreshEvent();
+                    document.getElementById("submitButton").disabled = false;
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Unable to signup to event.");
+            }
+        }
+
+        //small helper functions
+        function timeFormatter(time) {
+            const formattedTime = time.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit"
+            });
+            return formattedTime;
+        }
+
+        function getSelectedObject() {
+            const date = document.getElementById("dateSelect").value;
+            const match = data.find((item) => item.date === date);
+            return match;
+        }
+
+        //page initializer
+        async function init() {
+            await loadData();
+
+            populateDropdown();
+            refreshEvent();
+
+            document
+                .getElementById("dateSelect")
+                .addEventListener("change", refreshEvent);
+
+            document
+                .getElementById("signupForm")
+                .addEventListener("submit", submitSignup);
+
+            // Optional: auto-refresh every 30 seconds
+            // setInterval(async () => {
+            //   await loadData();
+            //   refreshEvent();
+            // }, 30000);
+        }
+
+        init();
+
+    </script>
+    <div id="header">
+        <h1 id="myHeader">Meeting viewer</h1>
+        <hr>
+    </div>
+    <!--   list meeting info
+  create signup field -->
+    <div id="mainform">
+        <form>
+            <label for="dateSelect">Current events:</label><br>
+            <!--       bonus points for making <optgroup>s by month -->
+            <select id="dateSelect"></select>
+        </form>
+    </div>
+
+    <div id="details"></div>
+
+    <div id="signup">
+        <form id="signupForm">
+            <input placeholder="Name" name="name" required>
+            <input type="email" placeholder="Email" name="email" required>
+            <input id="submitButton" type="submit" value="Sign me up!" class="button">
+        </form>
+    </div>
+    <div id="folks">
+        <label for="guestList">Going:</label>
+        <ul id="guestList" style="list-style-type:none;">
+        </ul>
+    </div>
+
+    <div id="printerContainer">
+        <hr>
+        <h3>Printer</h3>
+        <p id="printer"></p>
+    </div>
+</body>
+
+</html>
