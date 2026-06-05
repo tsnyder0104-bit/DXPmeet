@@ -1,1 +1,112 @@
+<!DOCTYPE html>
+<html>
 
+<head>
+  <title>Event Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+  <div id="pageHeader">
+    <a href="https://danceexpressmankato.com/" rel="home" id="ct-logo">
+        <img id="ct-logo-image" src="https://danceexpressmankato.com/wp-content/uploads/2023/09/Dance-Express-Logo-2.png" srcset="https://danceexpressmankato.com/wp-content/uploads/2023/09/Dance-Express-Logo-2.png 2x" alt="Dance Express">
+      </a>
+  </div>
+  <div class="container">
+
+    <!-- MAKER -->
+    <div id="maker" class="panel">
+      <div id="header">
+        <h1 id="myHeader" class="panelHeader">Meeting maker</h1>
+        <hr>
+      </div>
+      <div id="main" class="main">
+        <form id="contactForm">
+          <div id="eventName" class="formsection">
+            <label for="formField0" class="label">Title:</label><br>
+            <input id="title" class="formfield" name="title" type="text" required><br>
+          </div>
+          <div id="eventLocation" class="formsection">
+            <label for="formField1" class="label">Location:</label><br>
+            <input id="location" class="formfield" name="location" type="text" required><br>
+          </div>
+          <div id="eventTime" class="formsection">
+            <label for="formField2" class="label">Time:</label><br>
+            <div id="formField2" class="formfield">
+              <input id="dayPicker" class="datePicker" type="date" name="date" required>
+              <input id="timePicker" class="datePicker" type="time" name="time" value="12:00" required><br>
+            </div>
+          </div>
+          <div id="eventAttendance" class="formsection">
+            <label for="formField6" class="label">Duration (hours):</label><br>
+
+            <input id="formField6" class="formfield" type="number" value="1" name="duration" required><br>
+
+          </div>
+          <div id="eventJoinDeadline" class="formsection">
+            <label for="formField3" class="label">Sign up by:</label><br>
+            
+            <div id="formField3" class="formfield">
+              <input id="deadlineDay" class="deadline" type="date" name="deadDate" required>
+              <input id="deadlineTime" class="deadline" type="time" name="deadTime" value="23:59" required><br>
+            </div>
+          </div>
+          <div id="eventAttendance" class="formsection">
+            <label for="formField4" class="label">Minimum attendees:</label><br>
+
+            <input id="attendance" class="formfield" type="number" min="3" placeholder="eg: 5" name="count" required><br>
+
+          </div>
+          <div id="eventNotes" class="formsection">
+            <label for="formField5" class="label">Notes (optional):</label><br>
+
+            <textarea class="formfield" name="notes"></textarea><br>
+
+          </div>
+          <input id="submitEventButton" class="formfield button" type="submit" value="Create event!"><br>
+          <input type="hidden" name="status" value="pending">
+          <!--                 <input type="hidden" name="goingCount" value="0"> -->
+        </form>
+      </div>
+    </div>
+
+    <!-- VIEWER -->
+    <div id="viewer" class="panel">
+      <div id="header">
+        <h1 id="myHeader" class="panelHeader">Meeting viewer</h1>
+        <hr>
+      </div>
+      <!--   list meeting info
+  create signup field -->
+      <div id="mainform">
+        <form>
+          <label for="dateSelect">Current events:</label><br>
+          <!--       bonus points for making <optgroup>s by month -->
+          <select id="dateSelect"></select>
+        </form>
+      </div>
+
+      <div id="details"></div>
+
+      <div id="signup">
+        <form id="signupForm">
+          <input placeholder="Name" name="name" class="signUpField" required>
+          <input type="email" placeholder="Email" name="email" class="signUpField" required>
+          <input id="submitButton" type="submit" value="Sign me up!" class="button">
+        </form>
+      </div>
+
+      <div id="folks">
+        <label for="guestList">Signed up:</label>
+        <ul id="guestList" style="list-style-type:none;">
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+
+</html>
