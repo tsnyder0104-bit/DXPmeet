@@ -1,0 +1,89 @@
+/* FORM FORMATTING */
+#folks{
+  margin:10px;
+}
+.signUpField{
+  margin: 4px 0;
+}
+.button {
+  background-color: #e00097;
+  color: white;
+  border: 2px solid #a00053;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  /*   box-shadow:4px 4px 4px 0 rgba(0,0,0,0.6) */
+  /*   border-radius: 10px; */
+}
+.button:hover {
+  background-color: #c00075; /* Green */
+  color: white;
+}
+input {
+  width: 100%;
+  border: 2px solid #00b0b9;
+  border-radius: 8px;
+  margin: 2px 0;
+}
+input[type="date"] {
+  width: auto;
+}
+input[type="time"] {
+  width: auto;
+}
+textarea {
+  width: 100%;
+}
+
+/* PANEL FORMATTING */
+.panelHeader {
+  text-align: center;
+}
+.panel {
+  border: 1px solid black;
+  padding: 0 16px 16px;
+  flex: 1 1 300px;
+  background-color: #f0f0f0;
+}
+
+/* PAGE FORMATTING */
+#pageHeader {
+  display: flex;
+  padding: 15px;
+  border: 1px solid black;
+  justify-content: center;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+  margin: 0;
+}
+
+.container {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  /*   border: 3px solid black; */
+}
+
+/* MOBILE STYLING */
+@media screen and (max-width: 700px) {
+  #displayTitle {
+    margin:10px 0;
+  }
+  .displayEntry {
+    margin:6px 0;
+  }
+  .panelHeader {
+    font-size: x-large;
+  }
+  .container{
+    flex-direction: column-reverse;
+  }
+}
