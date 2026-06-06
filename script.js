@@ -1,5 +1,5 @@
 const WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbzcoT6DlXze2PlxD7hqd-9Tw-PM7cqwHwpG6zszBF8FvWiV0zIkfGnaz9DdC4ztjUg/exec";
+  "https://script.google.com/macros/s/AKfycbxQ1tJ7FyINIdRLFCxBhS9VMNZcRWE9aDblHPFyNRU0uwSx0wJPNZnj_6_wdCXRLzLn/exec";
 
 // -------------------- STATE --------------------
 let data = [];
@@ -263,7 +263,7 @@ function displayInfo(key) {
 
       <p id="displayNotes" class="displayEntry"></p>
 
-      <p class="displayEntry">
+      <p id="aCreativeID" class="displayEntry">
         Sign up by ${timeFormatter(deadTim)} on ${dateFormatter(deadDat)}
       </p>
     </span>
@@ -287,6 +287,9 @@ function displayInfo(key) {
 
     document.getElementById("displayLocation").textContent =
       "This event has been scheduled for destruction.";
+  }
+  if (match.status === "confirmed") {
+    document.getElementById("aCreativeID").textContent = "This event is confirmed to happen!";
   }
 }
 
